@@ -1,2 +1,3 @@
-twitch_token
-training
+twitch_token.py
+training.py
+/__pycache__/
