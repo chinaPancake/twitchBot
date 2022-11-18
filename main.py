@@ -13,7 +13,7 @@ class Bot(commands.Bot):
 
     async def event_ready(self):
         print(f'Logged in as | {self.nick}')
-        print(f'Usaer id is | {self.user_id}')
+        print(f'User id is | {self.user_id}')
 
     @client.event()
     async def event_pubsub_channel_points(event: pubsub.PubSubChannelPointsMessage):
