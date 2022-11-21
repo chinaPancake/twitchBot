@@ -42,5 +42,9 @@ class Bot(commands.Bot):
     async def ladneslowo(self, ctx: commands.Context):
         await ctx.send(f'{event_list}')
 
+    @commands.command()
+    async def komendy(self, ctx: commands.Context):
+        await ctx.send('Dostępne komendy to, ?ladneslowo, ?rulet, ?hello, rekinodtylu')
+
 bot = Bot()
 bot.run()
