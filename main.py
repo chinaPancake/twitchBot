@@ -3,7 +3,6 @@ from twitchio.ext import routines
 from twitchio.ext import commands
 from twitchio.ext import pubsub
 
-
 from bs4 import BeautifulSoup
 from lxml import etree
 import requests
@@ -15,7 +14,7 @@ import random
 class Bot(commands.Bot):
     client = twitchio.Client(token=twitch_token.twitch_token())
     client.pubsub = pubsub.PubSubPool(client)
-
+    # Get leatest post
     URL = 'https://altermmo.pl'
     web_page = requests.get(URL)
     soup = BeautifulSoup(web_page.content, "html.parser")
@@ -27,7 +26,7 @@ class Bot(commands.Bot):
     async def event_ready(self, ctx = commands.Context):
         print(f'Logged in as | {self.nick}')
         print(f'User id is | {self.user_id}')
-        #print(client.get_channel('SitLetto'))
+        # start test_routine function
         await self.test_routine.start()
 
     @routines.routine(seconds = 15.0)
@@ -35,26 +34,18 @@ class Bot(commands.Bot):
         chan = bot.get_channel("SitLetto")
         await chan.send(f'{self.dom.xpath("//*[@id]/div/div/a/@href")[0]}')
         
-
     async def event_message(self, message):
         if message.echo:
             return
 
         await self.handle_commands(message)
-
     
-    @client.event()
-    async def event_pubsub_channel_points(event: pubsub.PubSubChannelPointsMessage):
-        event_points = pubsub.PubSubChannelPointsMessage
-        event_list = []
-        event_list.append(event_points.input)
-        return event_list
-
     # Printing hello {author.name} message
     @commands.command()
     async def hello(self, ctx: commands.Context):
         await ctx.send(f'Hello, {ctx.author.name}!')
 
+    # Get random user from chat, and print his/her name
     @commands.command()
     async def rulet(self, ctx: commands.Context):
         get_uusers = ctx.bot.get_channel('SitLetto')
@@ -68,7 +59,8 @@ class Bot(commands.Bot):
     @commands.command()
     async def ladneslowo(self, ctx: commands.Context):
        await ctx.send(f'{event_list}')
-    
+
+    # get all bot commends  
     @commands.command()
     async def komendy(self, ctx: commands.Context):
         await ctx.send('Dostępne komendy to, ?ladneslowo, ?rulet, ?hello, rekinodtylu')
