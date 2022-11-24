@@ -37,7 +37,6 @@ class Bot(commands.Bot):
     async def event_message(self, message):
         if message.echo:
             return
-
         await self.handle_commands(message)
     
     # Printing hello {author.name} message
@@ -58,7 +57,7 @@ class Bot(commands.Bot):
 
     @commands.command()
     async def ladneslowo(self, ctx: commands.Context):
-       await ctx.send(f'{event_list}')
+       await ctx.send(f'tutaj będzie lista ładnych słów, ale póki co jest tylko rekinodtylu ')
 
     # get all bot commends  
     @commands.command()
