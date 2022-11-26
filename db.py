@@ -1,4 +1,5 @@
 import sqlite3
+from main import Bot
 
 # def create_database():
 #     conn = None
