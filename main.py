@@ -46,21 +46,19 @@ class Bot(commands.Bot):
             return
         await self.handle_commands(message)
 
+    @client.event()
     async def main(self):
-        # client twitch token of rekinbot
-        client = twitchio.Client(token=twitch_token.bot_twitch_token())
-        client.pubsub = pubsub.PubSubPool(client=client)
-
         # channel token from brodcast channel
+        user_id = twitch_token.user_client_id
         user_oauth_token = twitch_token.user_oauth_token()
         user_twitch_token = twitch_token.user_twitch_token()
         bot_oauth_token = twitch_token.bot_oauth_token()
         bot_twitch_token = twitch_token.bot_twitch_token()
 
-        # user_id -> sitletto channel
-        user_id = twitch_token.user_client_id
-
-        topic = [pubsub.channel_points(user_oauth_token)[user_id]]
+        topic = [
+            pubsub.channel_points(user_oauth_token)[user_id],
+            pubsub.bits(user_oauth_token)[user_id],
+        ]
         await client.pubsub.subscribe_topics(topic)
         await client.start()
 
