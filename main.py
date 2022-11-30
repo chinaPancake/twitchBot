@@ -13,6 +13,8 @@ import random
 
 
 class Bot(commands.Bot):
+    global client
+
     client = twitchio.Client(token=twitch_token.bot_twitch_access_token())
     client.pubsub = pubsub.PubSubPool(client)
 
@@ -46,28 +48,27 @@ class Bot(commands.Bot):
             return
         await self.handle_commands(message)
 
-    @client.event()
-    async def main(self):
-        # channel token from brodcast channel
-        user_id = twitch_token.user_client_id
-        user_oauth_token = twitch_token.user_oauth_token()
-        user_twitch_token = twitch_token.user_twitch_token()
-        bot_oauth_token = twitch_token.bot_oauth_token()
-        bot_twitch_token = twitch_token.bot_twitch_token()
+    # @client.event()
+    # async def event_pubsub_channel_points(
+    #     self, event: pubsub.PubSubChannelPointsMessage
+    # ):
+    #     print("get-event")
 
-        topic = [
-            pubsub.channel_points(user_oauth_token)[user_id],
-            pubsub.bits(user_oauth_token)[user_id],
-        ]
-        await client.pubsub.subscribe_topics(topic)
-        await client.start()
+    # @client.event()
+    # async def main():
+    #     # channel token from brodcast channel
+    #     user_int_id = 140267589
+    #     user_id = twitch_token.user_client_id()
+    #     user_oauth_token = twitch_token.user_oauth_token()
+    #     user_twitch_token = twitch_token.user_twitch_token()
+    #     bot_oauth_token = twitch_token.bot_oauth_token()
+    #     bot_twitch_token = twitch_token.bot_twitch_token()
 
-    @client.event()
-    async def event_pubsub_channel_points(
-        self, event: pubsub.PubSubChannelPointsMessage
-    ):
-        print("get-event")
+    #     topics = [pubsub.channel_points(user_oauth_token)[user_int_id]]
+    #     await client.pubsub.subscribe_topics(topics)
+    #     await client.start()
 
+    # client.loop.run_until_complete(main())
     # Printing hello {author.name} message
     @commands.command()
     async def hello(self, ctx: commands.Context):
@@ -97,9 +98,5 @@ class Bot(commands.Bot):
         await ctx.send("Dostępne komendy to, ?ladneslowo, ?rulet, ?hello, rekinodtylu")
 
 
-# PODCAST HERE
-
-
 bot = Bot()
-bot.client.loop.run_until_complete(bot.main())
 bot.run()
