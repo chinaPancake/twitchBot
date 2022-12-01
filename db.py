@@ -1,5 +1,4 @@
 import sqlite3
-from main import Bot
 
 # def create_database():
 #     conn = None
@@ -26,21 +25,24 @@ from main import Bot
 # def insert_into():
 #     conn = sqlite3.connect('quotes')
 #     cur = conn.cursor()
-    
+
 #     cur.execute('INSERT INTO quotes (user_name, quote) VALUES ("SitLetto", "Kobiety sa gorace")')
 #     conn.commit()
 #     conn.close()
 
 # first_execute = insert_into()
 
+
 def get_all():
-    conn = sqlite3.connect('quotes')
+    conn = sqlite3.connect("quotes")
     cur = conn.cursor()
 
-    cur.execute('SELECT * FROM quotes')
+    cur.execute("SELECT * FROM quotes")
     asd = cur.fetchall()
     for data in asd:
         print(data)
     conn.close()
 
+
 get_all = get_all()
+print(get_all)
