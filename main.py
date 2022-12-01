@@ -10,6 +10,7 @@ import requests
 import asyncio
 import twitch_token
 import random
+import sqlite3
 
 
 class Bot(commands.Bot):
@@ -24,52 +25,52 @@ class Bot(commands.Bot):
     soup = BeautifulSoup(web_page.content, "html.parser")
     dom = etree.HTML(str(soup))
 
-    def __init__(self):
+    # channel token from brodcast channel
+    user_int_id = 140267589
+    user_id = twitch_token.user_client_id()
+    user_oauth_token = twitch_token.user_oauth_token()
+    user_twitch_token = twitch_token.user_twitch_token()
+    bot_oauth_token = twitch_token.bot_oauth_token()
+    bot_twitch_token = twitch_token.bot_twitch_token()
+
+    def __init__(self, user_int_id=user_int_id):
         super().__init__(
             token=twitch_token.bot_twitch_access_token(),
             prefix="?",
             initial_channels=["SitLetto"],
         )
+        self.user_int_id = user_int_id
 
     async def event_ready(self):
-        print(f"Logged in as | {self.nick}")
-        print(f"User id is | {self.user_id}")
-        # start test_routine function
-        await self.test_routine.start()
+        print(f"Ready | {client.nick}")
+        topics = [
+            pubsub.channel_points(twitch_token.user_oauth_token())[self.user_int_id],
+        ]
+        await client.pubsub.subscribe_topics(topics)
 
-    # Send message into channel every x seconds / minutes
-    @routines.routine(seconds=60.0)
-    async def test_routine(self):
-        chan = bot.get_channel("SitLetto")
-        await chan.send(f'{self.dom.xpath("//*[@id]/div/div/a/@href")[0]}')
+    # # Send message into channel every x seconds / minutes
+    # @routines.routine(seconds=60.0)
+    # async def test_routine(self):
+    #     chan = bot.get_channel("SitLetto")
+    #     await chan.send(f'{self.dom.xpath("//*[@id]/div/div/a/@href")[0]}')
 
-    async def event_message(self, message):
-        if message.echo:
-            return
-        await self.handle_commands(message)
+    # async def event_message(self, message):
+    #     if message.echo:
+    #         return
+    #     await self.handle_commands(message)
 
-    # @client.event()
-    # async def event_pubsub_channel_points(
-    #     self, event: pubsub.PubSubChannelPointsMessage
-    # ):
-    #     print("get-event")
+    @client.event()
+    async def event_pubsub_channel_points(event: pubsub.PubSubChannelPointsMessage):
+        conn = sqlite3.connect("quotes")
+        cur = conn.cursor()
 
-    # @client.event()
-    # async def main():
-    #     # channel token from brodcast channel
-    #     user_int_id = 140267589
-    #     user_id = twitch_token.user_client_id()
-    #     user_oauth_token = twitch_token.user_oauth_token()
-    #     user_twitch_token = twitch_token.user_twitch_token()
-    #     bot_oauth_token = twitch_token.bot_oauth_token()
-    #     bot_twitch_token = twitch_token.bot_twitch_token()
+        cur.execute(
+            f"INSERT INTO quotes (user_name, quote) VALUES ('{event.user.name}', '{event.input}')"
+        )
+        conn.commit()
+        conn.close()
+        print(event.user.name, event.input)
 
-    #     topics = [pubsub.channel_points(user_oauth_token)[user_int_id]]
-    #     await client.pubsub.subscribe_topics(topics)
-    #     await client.start()
-
-    # client.loop.run_until_complete(main())
-    # Printing hello {author.name} message
     @commands.command()
     async def hello(self, ctx: commands.Context):
         await ctx.send(f"Hello, {ctx.author.name}!")
