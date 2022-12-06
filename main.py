@@ -48,24 +48,26 @@ class Bot(commands.Bot):
         ]
         await client.pubsub.subscribe_topics(topics)
 
-    # # Send message into channel every x seconds / minutes
-    # @routines.routine(seconds=60.0)
-    # async def test_routine(self):
-    #     chan = bot.get_channel("SitLetto")
-    #     await chan.send(f'{self.dom.xpath("//*[@id]/div/div/a/@href")[0]}')
+    # Send message into channel every x seconds / minutes
+    @routines.routine(minutes=5.0)
+    async def test_routine(self):
+        chan = bot.get_channel("SitLetto")
+        await chan.send(f'{self.dom.xpath("//*[@id]/div/div/a/@href")[0]}')
 
-    # async def event_message(self, message):
-    #     if message.echo:
-    #         return
-    #     await self.handle_commands(message)
+    async def event_message(self, message):
+        if message.echo:
+            return
+        await self.handle_commands(message)
 
+    # insert quote into a db
     @client.event()
     async def event_pubsub_channel_points(event: pubsub.PubSubChannelPointsMessage):
         conn = sqlite3.connect("quotes")
         cur = conn.cursor()
 
         cur.execute(
-            f"INSERT INTO quotes (user_name, quote) VALUES ('{event.user.name}', '{event.input}')"
+            f"INSERT INTO quotes (user_name, quote) VALUES (?, ?)",
+            (event.user.name, event.input),
         )
         conn.commit()
         conn.close()
@@ -89,9 +91,13 @@ class Bot(commands.Bot):
     # print nice quote about females
     @commands.command()
     async def ladneslowo(self, ctx: commands.Context):
-        await ctx.send(
-            f"tutaj będzie lista ładnych słów, ale póki co jest tylko rekinodtylu "
-        )
+        conn = sqlite3.connect("quotes")
+        cur = conn.cursor()
+        cur.execute(""" SELECT * FROM quotes """)
+        fetch_quote = cur.fetchall()
+        random_quote = [quote for quote in fetch_quote]
+        i = random.choice(range(len(random_quote)))
+        await ctx.send(f"{random_quote[i][2]} ~{random_quote[i][1]}")
 
     # get all bot commends
     @commands.command()
